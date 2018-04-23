@@ -1,0 +1,11 @@
+{% load static %}
+
+{# <link rel="stylesheet" type="text/css" href="{% static 'polls/style.css' %}" /> #}
+
+{{ secret_message }}
+<ul>
+{% for user in users %}
+    <li> {{ user.profile }}  - {{ user.profile.bio }}</li>
+
+{% endfor %}
+</ul>

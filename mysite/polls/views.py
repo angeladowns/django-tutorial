@@ -3,6 +3,9 @@ from django.http import HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
 from django.utils import timezone
+from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .models import Choice, Question
 
@@ -36,7 +39,7 @@ class ResultsView(generic.DetailView):
     model = Question
     template_name = 'polls/results.html'
 
-
+@login_required
 def vote(request, question_id):
     question = get_object_or_404(Question, pk=question_id)
     try:
@@ -54,3 +57,14 @@ def vote(request, question_id):
         # with POST data. This prevents data from being posted twice if a
         # user hits the Back button.
         return HttpResponseRedirect(reverse('polls:results', args=(question.id,)))
+
+class UserListView(LoginRequiredMixin, generic.ListView):
+    template_name = 'polls/userlist.html'
+    model = User
+    context_object_name = 'users'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["lots_of_users"] = User.objects.all()
+        context["secret_message"] = "This is a secret message"
+        return context
